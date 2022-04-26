@@ -11,7 +11,13 @@ import (
 
 func setupApi(host string, port int) {
 	// Load Fiber
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		// Spawns child processes.
+		// Prefork:               true,
+		EnablePrintRoutes:     true,
+		DisableStartupMessage: true,
+		AppName:               "Sync Ethers API",
+	})
 	// Middlewares
 	app.Use(cors.New())
 	app.Get("/dashboard", monitor.New())
@@ -27,6 +33,7 @@ func setupRoutes(app *fiber.App) {
 	// Routes
 	app.Get("/", func(c *fiber.Ctx) error {
 		log.Trace().Msg("Ping on /")
-		return c.SendString("Pong /")
+		return c.SendString("Pong /\n")
 	})
+	log.Debug().Msg("App Ready.")
 }

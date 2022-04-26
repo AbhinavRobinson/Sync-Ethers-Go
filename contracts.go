@@ -22,7 +22,7 @@ func setupContracts() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get token name")
 	}
-	log.Info().Msgf("Loaded %s", name)
+	log.Info().Msgf("👋 Loaded TOKEN: %s", name)
 }
 
 func loadABI() {
