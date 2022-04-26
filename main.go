@@ -2,31 +2,40 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"os"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "2006-01-02 15:04:05"})
 
+	host := "localhost"
 	port := 8080
-	log.Debug().Msgf("Starting Server on Port: %d", port)
 
-	http.HandleFunc("/", routes)
-	err := http.ListenAndServe(fmt.Sprintf("localhost:%d", port), nil)
+	// Load Fiber
+	app := fiber.New()
+	// Middlewares
+	app.Use(cors.New())
+	app.Get("/dashboard", monitor.New())
+	// Routes
+	setupRoutes(app)
+	// Listen
+	err := app.Listen(fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
-		log.Err(err)
-		return
+		log.Fatal().Err(err).Msg("Failed to start server")
 	}
 }
 
-func routes(w http.ResponseWriter, _ *http.Request) {
-	_, err := w.Write([]byte("To Be Implemented"))
-	if err != nil {
-		log.Err(err)
-		return
-	}
+func setupRoutes(app *fiber.App) {
+	// Routes
+	app.Get("/", func(c *fiber.Ctx) error {
+		log.Trace().Msg("Ping on /")
+		return c.SendString("Pong /")
+	})
 }
