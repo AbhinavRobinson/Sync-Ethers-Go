@@ -5,11 +5,11 @@ import (
 )
 
 func initApp() {
-	log.Info().Msg("Initializing App...")
+	log.Debug().Msg("Initializing App...")
 	setupContracts()
 }
 
 func initApi(host string, port int) {
-	log.Info().Msg("Initializing API...")
+	log.Debug().Msg("Initializing API...")
 	setupApi(host, port)
 }

@@ -16,7 +16,7 @@ var ctx = context.Background()
 var callOpts = &bind.CallOpts{Context: ctx, Pending: false}
 
 func setupContracts() {
-	log.Info().Msg("Setting up contracts...")
+	log.Debug().Msg("Setting up contracts...")
 	loadABI()
 	name, err := token.Name(callOpts)
 	if err != nil {
@@ -26,7 +26,7 @@ func setupContracts() {
 }
 
 func loadABI() {
-	log.Info().Msg("Loading ABI...")
+	log.Debug().Msg("Loading ABI...")
 	provider := "https://data-seed-prebsc-1-s1.binance.org:8545/"
 	client, err := ethclient.Dial(provider)
 	if err != nil {
