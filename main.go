@@ -1,34 +1,32 @@
 package main
 
 import (
-	f "fmt"
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/rs/zerolog"
-	l "github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
-	// UNIX Time is faster and smaller than most timestamps
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	l.Logger = l.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	port := 8080
-	l.Debug().Msgf("Starting Server on Port: %d", port)
+	log.Debug().Msgf("Starting Server on Port: %d", port)
 
 	http.HandleFunc("/", routes)
-	err := http.ListenAndServe(f.Sprintf("localhost:%d", port), nil)
+	err := http.ListenAndServe(fmt.Sprintf("localhost:%d", port), nil)
 	if err != nil {
-		l.Err(err)
+		log.Err(err)
 		return
 	}
 }
 
 func routes(w http.ResponseWriter, _ *http.Request) {
-	_, err := w.Write([]byte("Hello, World"))
+	_, err := w.Write([]byte("To Be Implemented"))
 	if err != nil {
-		l.Err(err)
+		log.Err(err)
 		return
 	}
 }
