@@ -6,7 +6,6 @@ import (
 
 func initApp() {
 	log.Debug().Msg("Initializing App...")
-	setupContracts()
 }
 
 func initApi(host string, port int) {

@@ -10,32 +10,29 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var token *TOKEN.Token
+var contracts Contracts
 
 var ctx = context.Background()
 var callOpts = &bind.CallOpts{Context: ctx, Pending: false}
 
-func setupContracts() {
-	log.Debug().Msg("Setting up contracts...")
-	loadABI()
-	name, err := token.Name(callOpts)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to get token name")
-	}
-	log.Info().Msgf("👋 Loaded TOKEN: %s", name)
-}
-
-func loadABI() {
+func loadToken(address string) bool {
 	log.Debug().Msg("Loading ABI...")
 	provider := "https://data-seed-prebsc-1-s1.binance.org:8545/"
 	client, err := ethclient.Dial(provider)
 	if err != nil {
 		log.Fatal().Msgf("Error connecting to client: %s", err)
 	}
-	tokenAddress := common.HexToAddress("4E0732efCdF0Cf92C48439535CD763de06FE353a")
+	tokenAddress := common.HexToAddress(address)
 	t, err := TOKEN.NewToken(tokenAddress, client)
 	if err != nil {
 		log.Fatal().Msgf("Some error occurred in TOKEN. Err: %s", err)
 	}
-	token = t
+	log.Debug().Msg("Contract processed.")
+
+	// Add to mapping
+	if contracts.Tokens == nil {
+		contracts.Tokens = make(map[string]*TOKEN.Token)
+	}
+	contracts.Tokens[address] = t
+	return true
 }
