@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo -n "Enter path to ABI/JSON: "
+echo "ABI to Go File Generator"
+echo -n "Enter path to Contract ABI/JSON: "
 read file_path
 echo -n "Enter Contract Name: "
 read abi_name
