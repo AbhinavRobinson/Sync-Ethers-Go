@@ -6,6 +6,7 @@ import (
 
 func initApp() {
 	log.Debug().Msg("Initializing App...")
+	initMongo()
 }
 
 func initApi(host string, port int) {

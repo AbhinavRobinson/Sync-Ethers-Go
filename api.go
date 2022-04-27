@@ -4,8 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,8 +17,8 @@ func setupApi(host string, port int) {
 		AppName:               "Sync Ethers API",
 	})
 	// Middlewares
-	app.Use(cors.New())
-	app.Get("/dashboard", monitor.New())
+	// app.Use(cors.New())
+	// app.Get("/dashboard", monitor.New())
 	setupRoutes(app)
 	// Listen
 	err := app.Listen(fmt.Sprintf("%s:%d", host, port))
@@ -33,6 +31,8 @@ func setupRoutes(app *fiber.App) {
 	// Routes
 	// GET Ping
 	app.Get("/", ping)
+	// GET ERC20
+	app.Get("/erc20", erc20)
 	// PATCH ERC20 with address
 	app.Patch("/erc20/:address", addERC20)
 	log.Info().Msg("✅ App Ready.")

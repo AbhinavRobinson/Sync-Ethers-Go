@@ -12,10 +12,15 @@ func ping(c *fiber.Ctx) error {
 	return c.SendString("Pong /\n")
 }
 
+func erc20(c *fiber.Ctx) error {
+	log.Trace().Msg("GET /erc20")
+	return c.JSON(AvailableContractTypes["ERC20"])
+}
+
 func addERC20(c *fiber.Ctx) error {
 	address := c.Params("address")
 	log.Trace().Msgf("PATCH /erc20/%s", address)
-	status := loadToken(address)
+	status := loadToken(address, "erc20")
 	if status {
 		tokenName, err := contracts.Tokens[address].Name(callOpts)
 		if err != nil {
@@ -23,7 +28,7 @@ func addERC20(c *fiber.Ctx) error {
 			return c.SendString(fmt.Sprintf("Error Adding %s", address))
 		}
 		log.Trace().Msgf("Token %s added", address)
-		return c.SendString(fmt.Sprintf("Added %s\n with Token: %s", c.Params("address"), tokenName))
+		return c.SendString(fmt.Sprintf("Added %s\n with Token: %s\n", c.Params("address"), tokenName))
 	} else {
 		log.Error().Msgf("Failed to add %s", address)
 		return c.SendString(fmt.Sprintf("Error Adding %s", address))

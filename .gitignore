@@ -1,2 +1,6 @@
+# GO STUFF
 tmp
 vendor
+
+# ADD YOUR LOCAL ENVS HERE
+env.local.go

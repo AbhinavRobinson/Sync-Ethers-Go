@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	TOKEN "sync-ethers-go/abis/token"
+	ERC20 "sync-ethers-go/abis/erc20"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -16,12 +16,12 @@ var ctx = context.Background()
 var callOpts = &bind.CallOpts{Context: ctx, Pending: false}
 var client *ethclient.Client
 
-func loadToken(address string) bool {
+func loadToken(address string, contractType string) bool {
 	log.Debug().Msg("Loading ABI...")
 
 	// Dial Provider
 	if client == nil {
-		provider := "https://data-seed-prebsc-1-s1.binance.org:8545/"
+		provider := RPC
 		c, err := ethclient.Dial(provider)
 		if err != nil {
 			log.Fatal().Msgf("Error connecting to client: %s", err)
@@ -31,16 +31,23 @@ func loadToken(address string) bool {
 
 	// Bind Token
 	tokenAddress := common.HexToAddress(address)
-	t, err := TOKEN.NewToken(tokenAddress, client)
+	t, err := ERC20.NewToken(tokenAddress, client)
 	if err != nil {
 		log.Fatal().Msgf("Some error occurred in TOKEN. Err: %s", err)
 	}
-	log.Info().Msg("🧩 Contract processed.")
+	log.Info().Msg("🧩 Contract processing...")
 
 	// Add to mapping
 	if contracts.Tokens == nil {
-		contracts.Tokens = make(map[string]*TOKEN.Token)
+		// Allocate if not found
+		contracts.Tokens = make(map[string]*ERC20.Token)
 	}
-	contracts.Tokens[address] = t
+	if contracts.Tokens[address] == nil {
+		// Add if not found
+		contracts.Tokens[address] = t
+	}
+
+	// Add to DB
+	addContractToDB(newContract(address, contractType))
 	return true
 }
