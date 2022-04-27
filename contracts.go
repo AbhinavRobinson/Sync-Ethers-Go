@@ -14,20 +14,28 @@ var contracts Contracts
 
 var ctx = context.Background()
 var callOpts = &bind.CallOpts{Context: ctx, Pending: false}
+var client *ethclient.Client
 
 func loadToken(address string) bool {
 	log.Debug().Msg("Loading ABI...")
-	provider := "https://data-seed-prebsc-1-s1.binance.org:8545/"
-	client, err := ethclient.Dial(provider)
-	if err != nil {
-		log.Fatal().Msgf("Error connecting to client: %s", err)
+
+	// Dial Provider
+	if client == nil {
+		provider := "https://data-seed-prebsc-1-s1.binance.org:8545/"
+		c, err := ethclient.Dial(provider)
+		if err != nil {
+			log.Fatal().Msgf("Error connecting to client: %s", err)
+		}
+		client = c
 	}
+
+	// Bind Token
 	tokenAddress := common.HexToAddress(address)
 	t, err := TOKEN.NewToken(tokenAddress, client)
 	if err != nil {
 		log.Fatal().Msgf("Some error occurred in TOKEN. Err: %s", err)
 	}
-	log.Debug().Msg("Contract processed.")
+	log.Info().Msg("🧩 Contract processed.")
 
 	// Add to mapping
 	if contracts.Tokens == nil {
