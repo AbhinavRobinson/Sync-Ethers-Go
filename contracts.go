@@ -31,20 +31,22 @@ func loadToken(address string, contractType string) bool {
 
 	// Bind Token
 	tokenAddress := common.HexToAddress(address)
-	t, err := ERC20.NewToken(tokenAddress, client)
-	if err != nil {
-		log.Fatal().Msgf("Some error occurred in TOKEN. Err: %s", err)
-	}
-	log.Info().Msg("🧩 Contract processing...")
 
-	// Add to mapping
-	if contracts.Tokens == nil {
-		// Allocate if not found
-		contracts.Tokens = make(map[string]*ERC20.Token)
-	}
-	if contracts.Tokens[address] == nil {
-		// Add if not found
-		contracts.Tokens[address] = t
+	if contractType == "ERC20" {
+		t, err := ERC20.NewToken(tokenAddress, client)
+		if err != nil {
+			log.Fatal().Msgf("Some error occurred in TOKEN. Err: %s", err)
+		}
+		log.Info().Msg("🧩 Contract processing...")
+		// Add to mapping
+		if contracts.Tokens == nil {
+			// Allocate if not found
+			contracts.Tokens = make(map[string]*ERC20.Token)
+		}
+		if contracts.Tokens[address] == nil {
+			// Add if not found
+			contracts.Tokens[address] = t
+		}
 	}
 
 	// Add to DB

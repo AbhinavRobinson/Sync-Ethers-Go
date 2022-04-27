@@ -20,7 +20,7 @@ func erc20(c *fiber.Ctx) error {
 func addERC20(c *fiber.Ctx) error {
 	address := c.Params("address")
 	log.Trace().Msgf("PATCH /erc20/%s", address)
-	status := loadToken(address, "erc20")
+	status := loadToken(address, "ERC20")
 	if status {
 		tokenName, err := contracts.Tokens[address].Name(callOpts)
 		if err != nil {
