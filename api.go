@@ -36,4 +36,5 @@ func setupRoutes(app *fiber.App) {
 	// PATCH ERC20 with address
 	app.Patch("/erc20/:address", addERC20)
 	log.Info().Msg("✅ App Ready.")
+	postInit()
 }

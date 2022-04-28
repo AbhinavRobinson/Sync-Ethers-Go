@@ -40,3 +40,22 @@ func addContractToDB(contract *StoredContracts) bool {
 	log.Debug().Msgf("Contract %s found in db", contract.Address)
 	return true
 }
+
+func getContractsFromDB() []StoredContracts {
+	// get all from db
+	results := []StoredContracts{}
+	col := mgm.Coll(&StoredContracts{})
+	cursor, err := col.Find(mgm.Ctx(), bson.M{})
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to get contracts from DB")
+	}
+	for cursor.Next(mgm.Ctx()) {
+		var contract StoredContracts
+		err := cursor.Decode(&contract)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to decode contract from DB")
+		}
+		results = append(results, contract)
+	}
+	return results
+}

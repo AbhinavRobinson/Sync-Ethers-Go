@@ -53,3 +53,12 @@ func loadToken(address string, contractType string) bool {
 	addContractToDB(newContract(address, contractType))
 	return true
 }
+
+func reloadTokens() {
+	// Load Tokens
+	log.Debug().Msg("Loading Tokens From DB...")
+	getContractsFromDB()
+	for _, contract := range getContractsFromDB() {
+		loadToken(contract.Address, contract.Type)
+	}
+}
