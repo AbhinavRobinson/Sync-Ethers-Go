@@ -23,24 +23,6 @@ func newContract(address string, contractType string) *StoredContracts {
 	}
 }
 
-func addContractToDB(contract *StoredContracts) bool {
-	// check if exists in db
-	c := &StoredContracts{}
-	err := mgm.Coll(c).FindOne(mgm.Ctx(), bson.M{"address": contract.Address}).Decode(c)
-	if err != nil {
-		log.Debug().Msgf("Contract %s not found in db", contract.Address)
-		// insert
-		err := mgm.Coll(contract).Create(contract)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Failed to add contract to DB")
-			return false
-		}
-		return true
-	}
-	log.Debug().Msgf("Contract %s found in db", contract.Address)
-	return true
-}
-
 func getContractsFromDB() []StoredContracts {
 	// get all from db
 	results := []StoredContracts{}
@@ -58,6 +40,24 @@ func getContractsFromDB() []StoredContracts {
 		results = append(results, contract)
 	}
 	return results
+}
+
+func addContractToDB(contract *StoredContracts) bool {
+	// check if exists in db
+	c := &StoredContracts{}
+	err := mgm.Coll(c).FindOne(mgm.Ctx(), bson.M{"address": contract.Address}).Decode(c)
+	if err != nil {
+		log.Debug().Msgf("Contract %s not found in db", contract.Address)
+		// insert
+		err := mgm.Coll(contract).Create(contract)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to add contract to DB")
+			return false
+		}
+		return true
+	}
+	log.Debug().Msgf("Contract %s found in db", contract.Address)
+	return true
 }
 
 func deleteContractFromDB(contract *StoredContracts) bool {
