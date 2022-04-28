@@ -31,6 +31,20 @@ func addERC20(c *fiber.Ctx) error {
 		return c.SendString(fmt.Sprintf("Added %s\n with Token: %s\n", c.Params("address"), tokenName))
 	} else {
 		log.Error().Msgf("Failed to add %s", address)
-		return c.SendString(fmt.Sprintf("Error Adding %s", address))
+		return c.SendString(fmt.Sprintf("Error Adding %s\n", address))
+	}
+}
+
+func deleteERC20(c *fiber.Ctx) error {
+	address := c.Params("address")
+	log.Trace().Msgf("DELETE /erc20/%s", address)
+	if contracts.Tokens[address] != nil {
+		deleteContractFromDB(newContract(address, "ERC20"))
+		delete(contracts.Tokens, address)
+		log.Trace().Msgf("Token %s deleted", address)
+		return c.SendString(fmt.Sprintf("Deleted %s\n", address))
+	} else {
+		log.Error().Msgf("Failed to delete %s", address)
+		return c.SendString(fmt.Sprintf("Error Deleting %s\n", address))
 	}
 }

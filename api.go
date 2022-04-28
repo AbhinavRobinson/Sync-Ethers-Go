@@ -35,6 +35,8 @@ func setupRoutes(app *fiber.App) {
 	app.Get("/erc20", erc20)
 	// PATCH ERC20 with address
 	app.Patch("/erc20/:address", addERC20)
+	// DELETE ERC20 with address
+	app.Delete("/erc20/:address", deleteERC20)
 	log.Info().Msg("✅ App Ready.")
 	postInit()
 }

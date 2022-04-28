@@ -59,3 +59,17 @@ func getContractsFromDB() []StoredContracts {
 	}
 	return results
 }
+
+func deleteContractFromDB(contract *StoredContracts) bool {
+	// delete from db
+	res, err := mgm.Coll(contract).DeleteOne(mgm.Ctx(), bson.M{"address": contract.Address})
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to delete contract from DB")
+		return false
+	}
+	if res.DeletedCount == 0 {
+		log.Debug().Msgf("Contract %s not found in db", contract.Address)
+		return false
+	}
+	return true
+}
