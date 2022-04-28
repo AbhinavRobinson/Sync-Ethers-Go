@@ -16,7 +16,7 @@ var ctx = context.Background()
 var callOpts = &bind.CallOpts{Context: ctx, Pending: false}
 var client *ethclient.Client
 
-func loadToken(address string, contractType string) bool {
+func loadToken(address string, contractType string, preload bool) bool {
 	log.Debug().Msg("Loading ABI...")
 
 	// Dial Provider
@@ -46,12 +46,15 @@ func loadToken(address string, contractType string) bool {
 		if contracts.Tokens[address] == nil {
 			// Add if not found
 			contracts.Tokens[address] = t
+			log.Info().Msgf("🧩 Contract loaded: %s", address)
+			// Add to DB
+			if !preload {
+				addContractToDB(newContract(address, contractType))
+			}
+			return true
 		}
 	}
-
-	// Add to DB
-	addContractToDB(newContract(address, contractType))
-	return true
+	return false
 }
 
 func reloadTokens() {
@@ -59,6 +62,6 @@ func reloadTokens() {
 	log.Debug().Msg("Loading Tokens From DB...")
 	getContractsFromDB()
 	for _, contract := range getContractsFromDB() {
-		loadToken(contract.Address, contract.Type)
+		loadToken(contract.Address, contract.Type, true)
 	}
 }
