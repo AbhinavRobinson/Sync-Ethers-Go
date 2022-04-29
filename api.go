@@ -14,7 +14,6 @@ func setupApi(host string, port int) {
 		// Prefork:               true,
 		EnablePrintRoutes:     true,
 		DisableStartupMessage: true,
-		AppName:               "Sync Ethers API",
 	})
 	// Middlewares
 	// app.Use(cors.New())
@@ -37,6 +36,11 @@ func setupRoutes(app *fiber.App) {
 	app.Patch("/erc20/:address", addERC20)
 	// DELETE ERC20 with address
 	app.Delete("/erc20/:address", deleteERC20)
+	// START
+	app.Get("/start", func(c *fiber.Ctx) error {
+		RunWatcher()
+		return c.SendStatus(200)
+	})
 	log.Info().Msg("✅ App Ready.")
 	postInit()
 }
