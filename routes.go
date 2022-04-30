@@ -20,9 +20,9 @@ func erc20(c *fiber.Ctx) error {
 func addERC20(c *fiber.Ctx) error {
 	address := c.Params("address")
 	log.Trace().Msgf("PATCH /erc20/%s", address)
-	status := loadToken(address, "ERC20", false)
+	status := web3.loadToken(address, "ERC20", false)
 	if status {
-		tokenName, err := contracts.Tokens[address].Name(callOpts)
+		tokenName, err := contracts.Tokens[address].Name(web3.CallOpts)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to get token name")
 			return c.SendString(fmt.Sprintf("Error Adding %s", address))

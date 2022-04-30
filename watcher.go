@@ -12,33 +12,11 @@ import (
 	ethereum "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog/log"
 )
 
-// WatcherService service
-type WatcherService struct {
-	client *ethclient.Client
-}
-
-type WatcherConfig struct {
-	ProviderURL string
-}
-
-// Watcher returns new service
-func Watcher(input *WatcherConfig) *WatcherService {
-	client, err := ethclient.Dial(input.ProviderURL)
-	if err != nil {
-		log.Fatal().Err(err)
-	}
-
-	return &WatcherService{
-		client: client,
-	}
-}
-
 // WatchOnChainTransactions watch for on-chain transactions
-func (s *WatcherService) WatchOnChainTransactions(input []common.Address) error {
+func (web3 *Web3Client) WatchOnChainTransactions(input []common.Address) error {
 	contractAbi, err := abi.JSON(strings.NewReader(string(ERC20.TokenABI)))
 	if err != nil {
 		return err
@@ -51,7 +29,7 @@ func (s *WatcherService) WatchOnChainTransactions(input []common.Address) error 
 		for {
 			select {
 			case <-ticker.C:
-				header, err := s.client.HeaderByNumber(context.Background(), nil)
+				header, err := web3.client.HeaderByNumber(context.Background(), nil)
 				if err != nil {
 					log.Error().Msgf("error HeaderByNumber: %s", err)
 					continue
@@ -76,7 +54,7 @@ func (s *WatcherService) WatchOnChainTransactions(input []common.Address) error 
 					Addresses: input,
 				}
 
-				logs, err := s.client.FilterLogs(context.Background(), query)
+				logs, err := web3.client.FilterLogs(context.Background(), query)
 				if err != nil {
 					log.Error().Msgf("error getting FilterLogs: %s", err)
 					continue
@@ -97,12 +75,8 @@ func (s *WatcherService) WatchOnChainTransactions(input []common.Address) error 
 	return nil
 }
 
-func RunWatcher() {
-	watcher := Watcher(&WatcherConfig{
-		ProviderURL: RPC,
-	})
-
-	err := watcher.WatchOnChainTransactions([]common.Address{
+func StartWatcher() {
+	err := web3.WatchOnChainTransactions([]common.Address{
 		common.HexToAddress("0x85d61e78d9062Cc7F9126CA9c2401bFcF7a4cF88"),
 	})
 
