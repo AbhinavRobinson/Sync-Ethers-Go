@@ -36,7 +36,7 @@ func setupRoutes(app *fiber.App) {
 	app.Patch("/erc20/:address", addERC20)
 	// DELETE ERC20 with address
 	app.Delete("/erc20/:address", deleteERC20)
-	// START
+	// START WATCHER
 	app.Get("/start", func(c *fiber.Ctx) error {
 		StartWatcher()
 		return c.SendStatus(200)
