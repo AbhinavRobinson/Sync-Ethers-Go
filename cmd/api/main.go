@@ -5,8 +5,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
-
-	routes "sync-ethers-go/internal/server"
 )
 
 func SetupApi(host string, port int) {
@@ -31,15 +29,15 @@ func SetupApi(host string, port int) {
 func SetupRoutes(app *fiber.App) {
 	// Routes
 	// GET Ping
-	app.Get("/", routes.Ping)
+	app.Get("/", ping)
 	// GET ERC20
-	app.Get("/erc20", routes.Erc20)
+	app.Get("/erc20", erc20)
 	// PATCH ERC20 with address
-	app.Patch("/erc20/:address", routes.AddERC20)
+	app.Patch("/erc20/:address", addERC20)
 	// DELETE ERC20 with address
-	app.Delete("/erc20/:address", routes.DeleteERC20)
+	app.Delete("/erc20/:address", deleteERC20)
 	// START WATCHER
-	app.Get("/start", routes.Watch)
+	app.Get("/start", watch)
 	log.Info().Msg("✅ App Ready.")
 	PostInit()
 }

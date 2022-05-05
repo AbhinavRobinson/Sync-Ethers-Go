@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"fmt"
@@ -12,17 +12,17 @@ import (
 	W3 "sync-ethers-go/internal/web3"
 )
 
-func Ping(c *fiber.Ctx) error {
+func ping(c *fiber.Ctx) error {
 	log.Trace().Msg("Ping on /")
 	return c.SendString("Pong /\n")
 }
 
-func Erc20(c *fiber.Ctx) error {
+func erc20(c *fiber.Ctx) error {
 	log.Trace().Msg("GET /erc20")
 	return c.JSON(internal.AvailableContractTypes["ERC20"])
 }
 
-func AddERC20(c *fiber.Ctx) error {
+func addERC20(c *fiber.Ctx) error {
 	address := c.Params("address")
 	log.Trace().Msgf("PATCH /erc20/%s", address)
 	status := W3.Web3.LoadToken(address, "ERC20", false)
@@ -40,7 +40,7 @@ func AddERC20(c *fiber.Ctx) error {
 	}
 }
 
-func DeleteERC20(c *fiber.Ctx) error {
+func deleteERC20(c *fiber.Ctx) error {
 	address := c.Params("address")
 	log.Trace().Msgf("DELETE /erc20/%s", address)
 	if internal.Contracts.Tokens[address] != nil {
@@ -54,7 +54,7 @@ func DeleteERC20(c *fiber.Ctx) error {
 	}
 }
 
-func Watch(c *fiber.Ctx) error {
+func watch(c *fiber.Ctx) error {
 	log.Trace().Msg("GET /watch")
 	var addresses []common.Address
 
