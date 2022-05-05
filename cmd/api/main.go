@@ -1,13 +1,15 @@
-package main
+package api
 
 import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
+
+	routes "sync-ethers-go/internal/server"
 )
 
-func setupApi(host string, port int) {
+func SetupApi(host string, port int) {
 	// Load Fiber
 	app := fiber.New(fiber.Config{
 		// Spawns child processes.
@@ -18,7 +20,7 @@ func setupApi(host string, port int) {
 	// Middlewares
 	// app.Use(cors.New())
 	// app.Get("/dashboard", monitor.New())
-	setupRoutes(app)
+	SetupRoutes(app)
 	// Listen
 	err := app.Listen(fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
@@ -26,18 +28,18 @@ func setupApi(host string, port int) {
 	}
 }
 
-func setupRoutes(app *fiber.App) {
+func SetupRoutes(app *fiber.App) {
 	// Routes
 	// GET Ping
-	app.Get("/", ping)
+	app.Get("/", routes.Ping)
 	// GET ERC20
-	app.Get("/erc20", erc20)
+	app.Get("/erc20", routes.Erc20)
 	// PATCH ERC20 with address
-	app.Patch("/erc20/:address", addERC20)
+	app.Patch("/erc20/:address", routes.AddERC20)
 	// DELETE ERC20 with address
-	app.Delete("/erc20/:address", deleteERC20)
+	app.Delete("/erc20/:address", routes.DeleteERC20)
 	// START WATCHER
-	app.Get("/start", watch)
+	app.Get("/start", routes.Watch)
 	log.Info().Msg("✅ App Ready.")
-	postInit()
+	PostInit()
 }

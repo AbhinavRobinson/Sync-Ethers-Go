@@ -1,4 +1,4 @@
-package main
+package web3
 
 import (
 	ERC20 "sync-ethers-go/abis/erc20"
@@ -6,44 +6,46 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog/log"
+
+	config "sync-ethers-go/config"
+	internal "sync-ethers-go/internal"
+	mongo "sync-ethers-go/internal/mongo"
 )
 
-var contracts Contracts
-
-func (web3 *Web3Client) loadToken(address string, contractType string, preload bool) bool {
+func (Web3 *Web3Client) LoadToken(address string, contractType string, preload bool) bool {
 	log.Debug().Msg("Loading ABI...")
 
 	// Dial Provider
-	if web3 == nil {
-		provider := RPC
+	if Web3 == nil {
+		provider := config.RPC
 		c, err := ethclient.Dial(provider)
 		if err != nil {
 			log.Fatal().Msgf("Error connecting to client: %s", err)
 		}
-		web3.client = c
+		Web3.client = c
 	}
 
 	// Bind Token
 	tokenAddress := common.HexToAddress(address)
 
 	if contractType == "ERC20" {
-		t, err := ERC20.NewToken(tokenAddress, web3.client)
+		t, err := ERC20.NewToken(tokenAddress, Web3.client)
 		if err != nil {
 			log.Fatal().Msgf("Some error occurred in TOKEN. Err: %s", err)
 		}
 		log.Info().Msg("🧩 Contract processing...")
 		// Add to mapping
-		if contracts.Tokens == nil {
+		if internal.Contracts.Tokens == nil {
 			// Allocate if not found
-			contracts.Tokens = make(map[string]*ERC20.Token)
+			internal.Contracts.Tokens = make(map[string]*ERC20.Token)
 		}
-		if contracts.Tokens[address] == nil {
+		if internal.Contracts.Tokens[address] == nil {
 			// Add if not found
-			contracts.Tokens[address] = t
+			internal.Contracts.Tokens[address] = t
 			log.Info().Msgf("🧩 Contract loaded: %s", address)
 			// Add to DB
 			if !preload {
-				addContractToDB(newContract(address, contractType))
+				mongo.AddContractToDB(mongo.NewContract(address, contractType))
 			}
 			return true
 		}
@@ -51,11 +53,11 @@ func (web3 *Web3Client) loadToken(address string, contractType string, preload b
 	return false
 }
 
-func (web3 *Web3Client) reloadTokens() {
+func (Web3 *Web3Client) ReloadTokens() {
 	// Load Tokens
 	log.Debug().Msg("Loading Tokens From DB...")
-	getContractsFromDB()
-	for _, contract := range getContractsFromDB() {
-		web3.loadToken(contract.Address, contract.Type, true)
+	mongo.GetContractsFromDB()
+	for _, contract := range mongo.GetContractsFromDB() {
+		Web3.LoadToken(contract.Address, contract.Type, true)
 	}
 }

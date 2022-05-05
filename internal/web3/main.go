@@ -1,10 +1,12 @@
-package main
+package web3
 
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog/log"
 )
+
+var Web3 *Web3Client
 
 // Web3Client service
 type Web3Client struct {

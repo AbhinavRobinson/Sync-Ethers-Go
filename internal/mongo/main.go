@@ -1,38 +1,41 @@
-package main
+package mongo
 
 import (
 	"github.com/kamva/mgm/v3"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	config "sync-ethers-go/config"
+	internal "sync-ethers-go/internal"
 )
 
-func initMongo() {
+func InitMongo() {
 	// Setup the mgm default config
-	err := mgm.SetDefaultConfig(nil, "sync-ethers", options.Client().ApplyURI(MONGO_URL))
+	err := mgm.SetDefaultConfig(nil, "sync-ethers", options.Client().ApplyURI(config.MONGO_URL))
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to initialize mongo")
 	}
 	log.Debug().Msg("Mongo initialized")
 }
 
-func newContract(address string, contractType string) *StoredContracts {
-	return &StoredContracts{
+func NewContract(address string, contractType string) *internal.StoredContracts {
+	return &internal.StoredContracts{
 		Address: address,
 		Type:    contractType,
 	}
 }
 
-func getContractsFromDB() []StoredContracts {
+func GetContractsFromDB() []internal.StoredContracts {
 	// get all from db
-	results := []StoredContracts{}
-	col := mgm.Coll(&StoredContracts{})
+	results := []internal.StoredContracts{}
+	col := mgm.Coll(&internal.StoredContracts{})
 	cursor, err := col.Find(mgm.Ctx(), bson.M{})
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get contracts from DB")
 	}
 	for cursor.Next(mgm.Ctx()) {
-		var contract StoredContracts
+		var contract internal.StoredContracts
 		err := cursor.Decode(&contract)
 		if err != nil {
 			log.Fatal().Err(err).Msg("Failed to decode contract from DB")
@@ -42,9 +45,9 @@ func getContractsFromDB() []StoredContracts {
 	return results
 }
 
-func addContractToDB(contract *StoredContracts) bool {
+func AddContractToDB(contract *internal.StoredContracts) bool {
 	// check if exists in db
-	c := &StoredContracts{}
+	c := &internal.StoredContracts{}
 	err := mgm.Coll(c).FindOne(mgm.Ctx(), bson.M{"address": contract.Address}).Decode(c)
 	if err != nil {
 		log.Debug().Msgf("Contract %s not found in db", contract.Address)
@@ -60,7 +63,7 @@ func addContractToDB(contract *StoredContracts) bool {
 	return true
 }
 
-func deleteContractFromDB(contract *StoredContracts) bool {
+func DeleteContractFromDB(contract *internal.StoredContracts) bool {
 	// delete from db
 	res, err := mgm.Coll(contract).DeleteOne(mgm.Ctx(), bson.M{"address": contract.Address})
 	if err != nil {

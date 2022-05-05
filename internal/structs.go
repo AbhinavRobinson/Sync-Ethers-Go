@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	ERC20 "sync-ethers-go/abis/erc20"
@@ -6,7 +6,9 @@ import (
 	"github.com/kamva/mgm/v3"
 )
 
-type Contracts struct {
+var Contracts ContractList
+
+type ContractList struct {
 	Tokens map[string]*ERC20.Token
 }
 

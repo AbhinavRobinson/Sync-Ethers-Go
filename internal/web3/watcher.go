@@ -1,4 +1,4 @@
-package main
+package web3
 
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 )
 
 // WatchOnChainTransactions watch for on-chain transactions
-func (web3 *Web3Client) WatchOnChainTransactions(input []common.Address) error {
+func (Web3 *Web3Client) WatchOnChainTransactions(input []common.Address) error {
 	contractAbi, err := abi.JSON(strings.NewReader(string(ERC20.TokenABI)))
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (web3 *Web3Client) WatchOnChainTransactions(input []common.Address) error {
 		for {
 			select {
 			case <-ticker.C:
-				header, err := web3.client.HeaderByNumber(context.Background(), nil)
+				header, err := Web3.client.HeaderByNumber(context.Background(), nil)
 				if err != nil {
 					log.Error().Msgf("error HeaderByNumber: %s", err)
 					continue
@@ -54,7 +54,7 @@ func (web3 *Web3Client) WatchOnChainTransactions(input []common.Address) error {
 					Addresses: input,
 				}
 
-				logs, err := web3.client.FilterLogs(context.Background(), query)
+				logs, err := Web3.client.FilterLogs(context.Background(), query)
 				if err != nil {
 					log.Error().Msgf("error getting FilterLogs: %s", err)
 					continue
@@ -81,7 +81,7 @@ func StartWatcher(addresses []common.Address) {
 		log.Info().Msgf("Watching: %s", addresses)
 	}
 
-	err := web3.WatchOnChainTransactions(addresses)
+	err := Web3.WatchOnChainTransactions(addresses)
 
 	if err != nil {
 		log.Fatal().Err(err)

@@ -5,6 +5,8 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+
+	api "sync-ethers-go/cmd/api"
 )
 
 func main() {
@@ -14,6 +16,6 @@ func main() {
 	port := 8080
 
 	// Setups
-	initApp()
-	initApi(host, port)
+	api.InitApp()
+	api.InitApi(host, port)
 }
