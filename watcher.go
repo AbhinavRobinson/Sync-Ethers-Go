@@ -75,10 +75,13 @@ func (web3 *Web3Client) WatchOnChainTransactions(input []common.Address) error {
 	return nil
 }
 
-func StartWatcher() {
-	err := web3.WatchOnChainTransactions([]common.Address{
-		common.HexToAddress("0x85d61e78d9062Cc7F9126CA9c2401bFcF7a4cF88"),
-	})
+func StartWatcher(addresses []common.Address) {
+	log.Info().Msg("Starting Watcher...")
+	for _, addresses := range addresses {
+		log.Info().Msgf("Watching: %s", addresses)
+	}
+
+	err := web3.WatchOnChainTransactions(addresses)
 
 	if err != nil {
 		log.Fatal().Err(err)

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
@@ -47,4 +48,19 @@ func deleteERC20(c *fiber.Ctx) error {
 		log.Error().Msgf("Failed to delete %s", address)
 		return c.SendString(fmt.Sprintf("Error Deleting %s\n", address))
 	}
+}
+
+func watch(c *fiber.Ctx) error {
+	log.Trace().Msg("GET /watch")
+	var addresses []common.Address
+
+	// get all addresses from db
+	contracts := getContractsFromDB()
+	for _, contract := range contracts {
+		addresses = append(addresses, common.HexToAddress(contract.Address))
+	}
+
+	// start watcher with contracts from db
+	StartWatcher(addresses)
+	return c.SendStatus(200)
 }
